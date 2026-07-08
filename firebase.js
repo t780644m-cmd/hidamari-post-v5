@@ -2,21 +2,21 @@ import { initializeApp } from
 "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
 import { 
-getFirestore 
+getDatabase 
 } from 
-"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 
-// =============================
 // Firebase設定
-// 後であなたのFirebaseの値に変更
-// =============================
+// ↓ここをあなたのFirebase情報に変更します
 
 const firebaseConfig = {
 
 apiKey: "ここに入力",
 
 authDomain: "ここに入力",
+
+databaseURL: "ここに入力",
 
 projectId: "ここに入力",
 
@@ -29,12 +29,11 @@ appId: "ここに入力"
 };
 
 
-
 // Firebase開始
 
 const app = initializeApp(firebaseConfig);
 
 
-// データベース
+// Realtime Database
 
-export const db = getFirestore(app);
+export const db = getDatabase(app);
