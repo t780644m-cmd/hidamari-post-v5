@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>ひだまりポスト v5</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+<header>
+    <div class="header-left">
+        📮
+        <div>
+            <h1>ひだまりポスト</h1>
+            <p>9人のキラリ宝箱</p>
+        </div>
+    </div>
+
+    <button onclick="openTeacher()">
+        👩‍🏫 先生用
+    </button>
+</header>
+
+
+<main>
+
+
+<!-- ======================
+トップ画面
+====================== -->
+
+<section id="home" class="page">
+
+<h2>
+みんなの「キラリ」を<br>
+あつめよう
+</h2>
+
+<p class="intro">
+友達のすてきなところを見つけて<br>
+メッセージを届けよう！
+</p>
+
+
+<div class="menu">
+
+<button class="send-box" onclick="showSend()">
+💌
+<br>
+キラリを送る
+</button>
+
+
+<button class="treasure-box" onclick="showTreasure()">
+💎
+<br>
+宝箱を見る
+</button>
+
+
+</div>
+
+
+<div class="count-box">
+
+🌸
+<span id="totalCount">
+0
+</span>
+🌸
+
+<p>
+集まったキラリ
+</p>
+
+</div>
+
+
+</section>
+
+
+
+
+
+<!-- ======================
+投稿画面
+====================== -->
+
+<section id="send" class="page hidden">
+
+
+<button onclick="goHome()">
+← もどる
+</button>
+
+
+<h2>
+💌 キラリを送る
+</h2>
+
+
+
+<label>
+だれに送る？
+</label>
+
+
+<div id="studentButtons" class="students">
+</div>
+
+
+
+<label>
+どんなキラリ？
+</label>
+
+
+<div class="category">
+
+<button onclick="setCategory('やさしさ')">
+💛 やさしさ
+</button>
+
+<button onclick="setCategory('がんばり')">
+⭐ がんばり
+</button>
+
+<button onclick="setCategory('コツコツ')">
+🐢 コツコツ
+</button>
+
+</div>
+
+
+
+<textarea 
+id="messageText"
+placeholder="見つけたキラリを書こう">
+</textarea>
+
+
+
+<input 
+id="sender"
+placeholder="あなたの名前">
+
+
+<button class="send-button" onclick="sendMessage()">
+
+📮 ポストに入れる
+
+</button>
+
+
+</section>
+
+
+
+
+
+<!-- ======================
+宝箱選択
+====================== -->
+
+
+<section id="treasure" class="page hidden">
+
+
+<button onclick="goHome()">
+← もどる
+</button>
+
+
+<h2>
+💎 だれの宝箱を見る？
+</h2>
+
+
+<div id="treasureButtons" class="students">
+
+</div>
+
+
+</section>
+
+
+
+
+
+<!-- ======================
+個人宝箱
+====================== -->
+
+
+<section id="box" class="page hidden">
+
+
+<button onclick="showTreasure()">
+← もどる
+</button>
+
+
+<h2 id="boxName">
+〇〇さんの宝箱
+</h2>
+
+
+<div id="flowers">
+🌱
+</div>
+
+
+<div id="messages">
+
+</div>
+
+
+</section>
+<!-- ======================
+先生ログイン画面
+====================== -->
+
+<section id="teacherLogin" class="page hidden">
+
+<h2>
+🔐 先生用ログイン
+</h2>
+
+
+<input 
+type="password"
+id="teacherPassword"
+placeholder="パスワード">
+
+
+<button onclick="loginTeacher()">
+ログイン
+</button>
+
+
+<button onclick="goHome()">
+もどる
+</button>
+
+
+</section>
+
+
+
+
+
+<!-- ======================
+先生管理画面
+====================== -->
+
+<section id="teacher" class="page hidden">
+
+
+<h2>
+👩‍🏫 先生画面
+</h2>
+
+
+<button onclick="goHome()">
+← トップへ
+</button>
+
+
+
+<h3>
+承認待ちメッセージ
+</h3>
+
+
+<div id="pendingMessages">
+
+</div>
+
+
+
+<h3>
+名前設定
+</h3>
+
+
+<div id="nameSettings">
+
+</div>
+
+
+<button onclick="saveNames()">
+名前を保存
+</button>
+
+
+
+</section>
+
+
+
+</main>
+
+
+
+<footer>
+
+ひだまりポスト v5
+
+</footer>
+
+
+
+<!-- Firebase -->
+<script type="module" src="firebase.js"></script>
+
+<!-- アプリ -->
+<script type="module" src="app.js"></script>
+
+
+</body>
+
+</html>
