@@ -1,30 +1,29 @@
 import { initializeApp } from 
-"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+"https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
 
 import { 
 getDatabase 
 } from 
-"https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+"https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js";
 
 
 // Firebase設定
-// ↓ここをあなたのFirebase情報に変更します
 
 const firebaseConfig = {
 
-apiKey: "ここに入力",
+apiKey: "AIzaSyDe2Dk4-JrHZWw0YidDdZt88sUCawWxSKo",
 
-authDomain: "ここに入力",
+authDomain: "hidamari-post-v5.firebaseapp.com",
 
-databaseURL: "ここに入力",
+databaseURL: "https://hidamari-post-v5-default-rtdb.asia-southeast1.firebasedatabase.app",
 
-projectId: "ここに入力",
+projectId: "hidamari-post-v5",
 
-storageBucket: "ここに入力",
+storageBucket: "hidamari-post-v5.firebasestorage.app",
 
-messagingSenderId: "ここに入力",
+messagingSenderId: "489161517987",
 
-appId: "ここに入力"
+appId: "1:489161517987:web:c876d99f9be7a6d67e0816"
 
 };
 
