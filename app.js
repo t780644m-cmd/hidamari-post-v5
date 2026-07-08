@@ -1,89 +1,51 @@
 import { db } from "./firebase.js";
 
 import {
-collection,
-addDoc,
-getDocs,
-doc,
-setDoc,
-updateDoc
+ref,
+set,
+push,
+onValue,
+update
 }
 from
-"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+"https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js";
 
 
 // =======================
-// 基本データ
+// 初期データ
 // =======================
-
 
 let students = [
-{
-id:"1",
-name:"あいき",
-icon:"🐱"
-},
-{
-id:"2",
-name:"さくら",
-icon:"🌸"
-},
-{
-id:"3",
-name:"ゆうと",
-icon:"🦖"
-},
-{
-id:"4",
-name:"ひなた",
-icon:"☀️"
-},
-{
-id:"5",
-name:"たくみ",
-icon:"⚽"
-},
-{
-id:"6",
-name:"みお",
-icon:"🎀"
-},
-{
-id:"7",
-name:"りく",
-icon:"🐻"
-},
-{
-id:"8",
-name:"あおい",
-icon:"🐬"
-},
-{
-id:"9",
-name:"こはる",
-icon:"🍀"
-}
+{name:"あいき",icon:"🐱",id:"1"},
+{name:"さくら",icon:"🌸",id:"2"},
+{name:"ゆうと",icon:"🦖",id:"3"},
+{name:"ひなた",icon:"☀️",id:"4"},
+{name:"たくみ",icon:"⚽",id:"5"},
+{name:"みお",icon:"🎀",id:"6"},
+{name:"りく",icon:"🐻",id:"7"},
+{name:"あおい",icon:"🐬",id:"8"},
+{name:"こはる",icon:"🍀",id:"9"}
 ];
 
 
-let selectedStudent = "";
+let selectedStudent="";
 
-let category = "やさしさ";
+let category="やさしさ";
 
-let currentBox = "";
+let messages=[];
 
 
 
 // =======================
-// 画面切替
+// 画面操作
 // =======================
 
 
 function hidePages(){
 
 document.querySelectorAll(".page")
-.forEach(page=>{
-page.classList.add("hidden");
+.forEach(p=>{
+p.classList.add("hidden");
 });
 
 }
@@ -104,6 +66,8 @@ loadCount();
 
 
 
+
+
 window.showSend=function(){
 
 hidePages();
@@ -118,6 +82,8 @@ selectStudent
 );
 
 }
+
+
 
 
 
@@ -140,13 +106,14 @@ openBox
 
 
 // =======================
-// 児童ボタン作成
+// 児童一覧表示
 // =======================
 
 
-function renderStudents(target,func){
+function renderStudents(id,func){
 
-const area=document.getElementById(target);
+const area=
+document.getElementById(id);
 
 area.innerHTML="";
 
@@ -154,10 +121,11 @@ area.innerHTML="";
 students.forEach(s=>{
 
 
-let button=document.createElement("button");
+const btn=
+document.createElement("button");
 
 
-button.innerHTML=
+btn.innerHTML=
 `
 ${s.icon}
 <br>
@@ -165,28 +133,25 @@ ${s.name}
 `;
 
 
-button.onclick=()=>func(s.id);
+btn.onclick=()=>func(s.id);
 
 
-area.appendChild(button);
+area.appendChild(btn);
 
 
 });
-
 
 }
 
 
 
 
-
-
 // =======================
-// 投稿相手選択
+// 相手選択
 // =======================
 
 
-window.selectStudent=function(id){
+function selectStudent(id){
 
 selectedStudent=id;
 
@@ -202,11 +167,11 @@ event.target
 .closest("button")
 .classList.add("active");
 
-
 }
 
 
 
+window.selectStudent=selectStudent;
 
 
 
@@ -220,13 +185,12 @@ window.setCategory=function(value){
 category=value;
 
 }
-
 // =======================
 // メッセージ送信
 // =======================
 
 
-window.sendMessage = async function(){
+window.sendMessage = function(){
 
 
 const text =
@@ -249,7 +213,6 @@ return;
 }
 
 
-
 if(!text){
 
 alert("メッセージを書いてね");
@@ -260,9 +223,14 @@ return;
 
 
 
-await addDoc(
-collection(db,"messages"),
-{
+const messageRef =
+push(
+ref(db,"messages")
+);
+
+
+
+set(messageRef,{
 
 target:selectedStudent,
 
@@ -276,14 +244,12 @@ approved:false,
 
 createdAt:Date.now()
 
-}
-
-);
+});
 
 
 
 alert(
-"ポストに入れました📮\n先生が確認したら届くよ！"
+"ポストに入れました📮\n先生が確認したら届きます！"
 );
 
 
@@ -291,6 +257,7 @@ alert(
 document.getElementById("messageText").value="";
 
 document.getElementById("sender").value="";
+
 
 selectedStudent="";
 
@@ -305,15 +272,61 @@ goHome();
 
 
 
+// =======================
+// データ読み込み
+// =======================
+
+
+onValue(
+ref(db,"messages"),
+(snapshot)=>{
+
+
+messages=[];
+
+
+snapshot.forEach(child=>{
+
+
+messages.push({
+
+id:child.key,
+
+...child.val()
+
+});
+
+
+});
+
+
+
+loadCount();
+
+
+
+}
+);
+
+
+
+
+
 
 // =======================
-// 宝箱表示
+// 宝箱
 // =======================
+
+
+let currentBox="";
+
 
 
 window.openBox=function(id){
 
+
 currentBox=id;
+
 
 
 const student =
@@ -338,50 +351,34 @@ document
 .classList.remove("hidden");
 
 
+showMessages(id);
 
-loadBox(id);
 
-
-}
-
+};
 
 
 
 
-async function loadBox(id){
 
 
-const area =
+function showMessages(id){
+
+
+const area=
 document.getElementById("messages");
 
 
-const flower =
+const flower=
 document.getElementById("flowers");
 
 
 area.innerHTML="";
 
-
-flower.innerHTML="🌸";
-
-
-
-const snap =
-await getDocs(
-collection(db,"messages")
-);
-
-
-
 let count=0;
 
 
 
-snap.forEach(doc=>{
-
-
-const m=doc.data();
-
+messages.forEach(m=>{
 
 
 if(
@@ -394,7 +391,9 @@ count++;
 
 
 area.innerHTML +=
+
 `
+
 <div class="card">
 
 <p>
@@ -402,11 +401,16 @@ ${m.text}
 </p>
 
 <small>
-${m.sender} さん
+
+${m.sender}
+<br>
+
 ${m.category}
+
 </small>
 
 </div>
+
 `;
 
 
@@ -419,10 +423,12 @@ ${m.category}
 
 
 
-flower.innerHTML=
-"🌸".repeat(
-Math.max(count,1)
-);
+flower.innerHTML =
+count>0
+?
+"🌸".repeat(count)
+:
+"🌱";
 
 
 
@@ -431,28 +437,24 @@ Math.max(count,1)
 
 
 
+
+
 // =======================
-// 全体数
+// 全体カウント
 // =======================
 
 
-async function loadCount(){
-
-
-const snap=
-await getDocs(
-collection(db,"messages")
-);
-
+function loadCount(){
 
 
 let count=0;
 
 
-snap.forEach(doc=>{
+
+messages.forEach(m=>{
 
 
-if(doc.data().approved){
+if(m.approved===true){
 
 count++;
 
@@ -462,31 +464,19 @@ count++;
 });
 
 
-document
-.getElementById("totalCount")
-.innerText=count;
 
+const el=
+document.getElementById(
+"totalCount"
+);
+
+
+if(el){
+
+el.innerText=count;
 
 }
 
-
-
-
-
-
-// =======================
-// 先生画面入口
-// =======================
-
-
-window.openTeacher=function(){
-
-hidePages();
-
-
-document
-.getElementById("teacherLogin")
-.classList.remove("hidden");
 
 
 }
@@ -495,19 +485,32 @@ document
 // =======================
 
 
+window.openTeacher=function(){
+
+hidePages();
+
+document
+.getElementById("teacherLogin")
+.classList.remove("hidden");
+
+};
+
+
+
+
+
 window.loginTeacher=function(){
+
 
 const pass =
 document.getElementById("teacherPassword")
 .value;
 
 
-
 if(pass==="1234"){
 
 
 hidePages();
-
 
 document
 .getElementById("teacher")
@@ -521,7 +524,6 @@ loadTeacher();
 
 
 alert("パスワードが違います");
-
 
 }
 
@@ -538,7 +540,7 @@ alert("パスワードが違います");
 // =======================
 
 
-async function loadTeacher(){
+function loadTeacher(){
 
 
 const area =
@@ -548,18 +550,8 @@ document.getElementById("pendingMessages");
 area.innerHTML="";
 
 
-const snap =
-await getDocs(
-collection(db,"messages")
-);
 
-
-
-snap.forEach(async d=>{
-
-
-const m=d.data();
-
+messages.forEach(m=>{
 
 
 if(!m.approved){
@@ -579,9 +571,9 @@ area.innerHTML +=
 
 <div class="card">
 
-<p>
+<h4>
 👤 ${student.name}
-</p>
+</h4>
 
 <p>
 ${m.text}
@@ -594,15 +586,14 @@ ${m.category}
 </small>
 
 
-<button onclick="approve('${d.id}')">
+<br>
 
-掲載する
-
+<button onclick="approve('${m.id}')">
+🌸 掲載する
 </button>
 
 
 </div>
-
 
 `;
 
@@ -611,13 +602,10 @@ ${m.category}
 }
 
 
-
 });
 
 
-
 renderNameSettings();
-
 
 }
 
@@ -632,12 +620,15 @@ renderNameSettings();
 // =======================
 
 
-window.approve=async function(id){
+window.approve=function(id){
 
 
-await updateDoc(
+update(
 
-doc(db,"messages",id),
+ref(
+db,
+"messages/"+id
+),
 
 {
 
@@ -649,10 +640,10 @@ approved:true
 
 
 
-alert("掲載しました🌸");
+alert(
+"掲載しました🌸"
+);
 
-
-loadTeacher();
 
 
 };
@@ -671,7 +662,9 @@ function renderNameSettings(){
 
 
 const area =
-document.getElementById("nameSettings");
+document.getElementById(
+"nameSettings"
+);
 
 
 area.innerHTML="";
@@ -708,7 +701,6 @@ value="${s.name}"
 
 
 
-
 window.saveNames=function(){
 
 
@@ -721,7 +713,6 @@ document.getElementById(
 );
 
 
-
 if(input.value){
 
 s.name=input.value;
@@ -731,11 +722,6 @@ s.name=input.value;
 
 });
 
-
-
-alert(
-"名前を保存しました"
-);
 
 
 renderStudents(
@@ -750,7 +736,14 @@ openBox
 );
 
 
+
+alert(
+"名前を保存しました"
+);
+
+
 };
+
 
 
 
@@ -764,11 +757,6 @@ openBox
 
 window.onload=function(){
 
-
 goHome();
-
-
-loadCount();
-
 
 };
